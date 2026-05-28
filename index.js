@@ -39,10 +39,18 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// Lista completa (para el admin)
+// Lista completa (para el admin) — con datos de membresía
 app.get('/api/inscripciones', async (req, res) => {
   try {
-    const { rows } = await pool.query(`SELECT ${COLS} FROM inscripciones ORDER BY created_at`);
+    const { rows } = await pool.query(`
+      SELECT i.id, i.name, i.phone, i.category, i.day, i.present,
+             i.created_at AS "createdAt",
+             (m.id IS NOT NULL) AS membresia,
+             m.precio::float8 AS precio
+      FROM inscripciones i
+      LEFT JOIN memberships m ON m.inscripcion_id = i.id
+      ORDER BY i.created_at
+    `);
     res.json(rows);
   } catch (e) {
     console.error(e);
@@ -98,6 +106,34 @@ app.post('/api/inscripciones', async (req, res) => {
     );
     if (!rows.length)
       return res.status(409).json({ error: `La categoría ${category} está completa` });
+    res.status(201).json(rows[0]);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Error de base de datos' });
+  }
+});
+
+// Crear/actualizar membresía de una inscripción
+app.post('/api/memberships', async (req, res) => {
+  const { inscripcion_id, precio } = req.body || {};
+  const precioNum = Number(precio);
+
+  if (!inscripcion_id) return res.status(400).json({ error: 'Falta inscripcion_id' });
+  if (!Number.isFinite(precioNum) || precioNum <= 0)
+    return res.status(400).json({ error: 'Precio inválido' });
+
+  try {
+    const ins = await pool.query('SELECT 1 FROM inscripciones WHERE id = $1', [inscripcion_id]);
+    if (!ins.rowCount) return res.status(404).json({ error: 'Inscripción no encontrada' });
+
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const { rows } = await pool.query(
+      `INSERT INTO memberships (id, inscripcion_id, precio)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (inscripcion_id) DO UPDATE SET precio = EXCLUDED.precio
+       RETURNING id, inscripcion_id AS "inscripcionId", precio::float8 AS precio, created_at AS "createdAt"`,
+      [id, inscripcion_id, precioNum]
+    );
     res.status(201).json(rows[0]);
   } catch (e) {
     console.error(e);

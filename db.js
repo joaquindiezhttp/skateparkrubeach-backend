@@ -36,6 +36,14 @@ async function init() {
       created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
     );
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS memberships (
+      id             TEXT PRIMARY KEY,
+      inscripcion_id TEXT NOT NULL UNIQUE REFERENCES inscripciones(id) ON DELETE CASCADE,
+      precio         NUMERIC(10,2) NOT NULL,
+      created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
 }
 
 module.exports = { pool, init };
