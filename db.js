@@ -1,5 +1,5 @@
 // ============================================================
-//  Skateparkrubeach · conexión a PostgreSQL
+//  Skatepark Perubeach · conexión a PostgreSQL
 // ============================================================
 
 const { Pool } = require('pg');

@@ -1,5 +1,5 @@
 // ============================================================
-//  Skateparkrubeach · API de inscripciones (PostgreSQL)
+//  Skatepark Perubeach · API de inscripciones (PostgreSQL)
 //  Express + cors + pg. Cupo 10 por categoría enforced en SQL.
 // ============================================================
 
@@ -26,7 +26,7 @@ const MAX_PER_CATEGORY = 10;
 const COLS = 'id, name, phone, category, day, present, created_at AS "createdAt"';
 
 app.get('/', (req, res) => {
-  res.send('Skateparkrubeach API ✅ (PostgreSQL) — ver /api/inscripciones');
+  res.send('Skatepark Perubeach API ✅ (PostgreSQL) — ver /api/inscripciones');
 });
 
 // Health check para Render (verifica también la conexión a la base)
