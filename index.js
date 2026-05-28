@@ -29,6 +29,16 @@ app.get('/', (req, res) => {
   res.send('Skateparkrubeach API ✅ (PostgreSQL) — ver /api/inscripciones');
 });
 
+// Health check para Render (verifica también la conexión a la base)
+app.get('/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.json({ status: 'ok', db: 'up' });
+  } catch (e) {
+    res.status(503).json({ status: 'error', db: 'down' });
+  }
+});
+
 // Lista completa (para el admin)
 app.get('/api/inscripciones', async (req, res) => {
   try {

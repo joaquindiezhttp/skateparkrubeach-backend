@@ -4,10 +4,19 @@
 
 const { Pool } = require('pg');
 
-const connectionString = process.env.DATABASE_URL;
+let connectionString = process.env.DATABASE_URL;
 
 // Neon / Supabase / Railway requieren SSL. Local (localhost) no.
 const isLocal = connectionString && /localhost|127\.0\.0\.1/.test(connectionString);
+
+// El SSL lo controlamos con el objeto `ssl` de abajo, así que quitamos
+// `sslmode` de la URL para evitar el warning de deprecación de pg.
+if (connectionString) {
+  connectionString = connectionString
+    .replace(/[?&]sslmode=[^&]+/i, (m) => (m[0] === '?' ? '?' : ''))
+    .replace(/\?&/, '?')
+    .replace(/[?&]$/, '');
+}
 
 const pool = new Pool({
   connectionString,
