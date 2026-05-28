@@ -1,0 +1,14 @@
+# Dependencias
+node_modules/
+
+# Datos de alumnos (no versionar PII)
+data.json
+
+# Entorno y logs
+.env
+.env.*
+*.log
+npm-debug.log*
+
+# Sistema
+.DS_Store
