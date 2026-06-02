@@ -11,7 +11,8 @@ router.get('/', async (req, res) => {
       SELECT i.id, i.name, i.phone, i.category, i.day, i.present,
              i.created_at AS "createdAt",
              (m.id IS NOT NULL) AS membresia,
-             m.precio::float8 AS precio
+             m.precio::float8 AS precio,
+             m.clases_restantes AS "clasesRestantes"
       FROM inscripciones i
       LEFT JOIN memberships m ON m.inscripcion_id = i.id
       ORDER BY i.created_at
