@@ -23,7 +23,7 @@ const pool = new Pool({
   ssl: isLocal ? false : { rejectUnauthorized: false },
 });
 
-// Crea la tabla si no existe (se corre al arrancar el server).
+// Crea las tablas si no existen (se corre al arrancar el server).
 async function init() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS inscripciones (
